@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast Notification - Stack</title>
+
+    <!-- Style for Toast and Buttons -->
+    <style>
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column; /* Stack toasts vertically */
+            gap: 10px; /* Gap between each toast */
+        }
+
+        /* Toast Message */
+        .toast {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s, transform 0.5s;
+            font-size: 16px;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        /* Toast show animation */
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button Styling */
+        button {
+            padding: 10px 15px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Buttons to trigger toast messages -->
+    <button onclick="showToast('This is the first message!')">Show First Message</button>
+    <button onclick="showToast('This is the second message!')">Show Second Message</button>
+    <button onclick="showToast('This is the third message!')">Show Third Message</button>
+
+    <!-- JavaScript for Toast Notifications -->
+    <script>
+        let toastQueue = [];  // Queue to store messages
+        let isToastVisible = false; // Flag to check if a toast is currently visible
+
+        function showToast(message) {
+            // Push new message to the queue
+            toastQueue.push(message);
+
+            // Show the toast message immediately if no toast is visible
+            displayNextToast()
+        }
+
+        function displayNextToast() {
+            if (toastQueue.length > 0 ) {
+                // Set the flag to true because a toast is being displayed
+                isToastVisible = true;
+
+                // Create the toast element
+                let message = toastQueue[toastQueue.length - 1];
+                let toast = $('<div class="toast"></div>').text(message);
+
+                // Append the toast to the container
+                $('#toast-container').append(toast);
+
+                // Show the toast (with animation)
+                setTimeout(function() {
+                    toast.addClass('show');
+                }, 10);  // Delay to trigger CSS animation
+
+                // Optionally, remove the toast after 5 seconds
+                setTimeout(function() {
+                    toast.removeClass('show'); // Fade out animation
+                    // After fade-out, remove the toast from the DOM
+                    setTimeout(function() {
+                        toast.remove();
+                        // Remove the processed message from the queue
+                        toastQueue.shift();
+                        // Reset the flag and display the next toast if available
+                        isToastVisible = false;
+                        // if (toastQueue.length > 0) {
+                        //     displayNextToast();
+                        // }
+                    }, 500);  // Wait for fade-out animation to finish (0.5s)
+                }, 5000); // Toast stays for 5 seconds
+            }
+        }
+    </script>
+</body>
+</html>
