@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,23 +15,27 @@
             right: 20px;
             z-index: 1000;
             display: flex;
-            flex-direction: column; /* Stack toasts vertically */
-            gap: 10px; /* Gap between each toast */
+            flex-direction: column;
+            /* Stack toasts vertically */
+            gap: 10px;
+            /* Gap between each toast */
         }
 
         /* Toast Message */
         .toast {
-            background-color: #333;
-            color: #fff;
+            background-color: #fdfdfd;
+            color: #2c2c2c;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 10px;
             opacity: 0;
             transform: translateY(-20px);
             transition: opacity 0.5s, transform 0.5s;
             font-size: 16px;
             min-width: 200px;
             text-align: center;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
         }
+
 
         /* Toast show animation */
         .toast.show {
@@ -53,20 +58,67 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        .toast-container {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+
+        .toast-container img {
+            margin-right: 10px;
+            width: 30px;
+            height: 30px;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .toast-container span {
+            display: block;
+            font-size: 12px;
+            color: #808080;
+        }
+
+        .toast-container p {
+            margin: 0;
+            text-align: left;
+        }
+          /* Close button styling */
+    .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        color: #888;
+        transition: color 0.3s;
+    }
+
+    .close-btn:hover {
+        color: #000;
+    }
     </style>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
     <!-- Buttons to trigger toast messages -->
-    <button onclick="showToast('This is the first message!')">Show First Message</button>
-    <button onclick="showToast('This is the second message!')">Show Second Message</button>
-    <button onclick="showToast('This is the third message!')">Show Third Message</button>
+    <button
+        onclick="showToast(`<div class='toast-container'><img src='./icon-1.svg' alt='img'> <div><p>The Admin</p> <span>This is First Message</span></div> </div>`)">
+        Show First Message
+    </button>
+    <button
+        onclick="showToast(`<div class='toast-container'><img src='./icon-1.svg' alt='img'> <div><p>The Admin</p> <span>This is Second Message</span></div> </div>`)">Show
+        Second Message</button>
+    <button
+        onclick="showToast(`<div class='toast-container'><img src='./icon-1.svg' alt='img'> <div><p>The Admin</p> <span>This is Third Message</span></div> </div>`)">Show
+        Third Message</button>
 
     <!-- JavaScript for Toast Notifications -->
     <script>
@@ -82,27 +134,32 @@
         }
 
         function displayNextToast() {
-            if (toastQueue.length > 0 ) {
+            if (toastQueue.length > 0) {
                 // Set the flag to true because a toast is being displayed
                 isToastVisible = true;
 
                 // Create the toast element
                 let message = toastQueue[toastQueue.length - 1];
-                let toast = $('<div class="toast"></div>').text(message);
+                let toast = $(`
+            <div class="toast">
+                <span class="close-btn">&times;</span>
+                ${message}
+            </div>
+        `).appendTo('body');
 
                 // Append the toast to the container
                 $('#toast-container').append(toast);
 
                 // Show the toast (with animation)
-                setTimeout(function() {
+                setTimeout(function () {
                     toast.addClass('show');
                 }, 10);  // Delay to trigger CSS animation
 
                 // Optionally, remove the toast after 5 seconds
-                setTimeout(function() {
+                setTimeout(function () {
                     toast.removeClass('show'); // Fade out animation
                     // After fade-out, remove the toast from the DOM
-                    setTimeout(function() {
+                    setTimeout(function () {
                         toast.remove();
                         // Remove the processed message from the queue
                         toastQueue.shift();
@@ -113,8 +170,19 @@
                         // }
                     }, 500);  // Wait for fade-out animation to finish (0.5s)
                 }, 5000); // Toast stays for 5 seconds
+                toast.find(".close-btn").on("click", function () {
+                    removeToast(toast);
+                });
             }
+        }
+        function removeToast(toast) {
+            toast.removeClass("show"); // Remove show class for smooth transition
+            setTimeout(() => {
+                toast.remove(); // Remove from DOM
+                // displayNextToast(); // Show next toast
+            }, 300);
         }
     </script>
 </body>
+
 </html>
